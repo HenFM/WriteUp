@@ -1,0 +1,10 @@
+---
+title: "README"
+author: "HL VAN ZYL 17640296"
+date: "2025-01-31"
+output: github_document
+---
+
+# Introduction
+
+This is the README for my financial econometrics 871 project. 
