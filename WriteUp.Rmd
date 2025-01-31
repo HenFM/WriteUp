@@ -3,7 +3,7 @@
 # Remove comments and add values where applicable.
 # The descriptions below should be self-explanatory
 
-title: "Time-varying Correlations Between Sectors of the All Share Index"
+title: "Rethinking Market Cap Dynamics: A South African Perspective on Risk and Return"
 #subtitle: "This will appear as Right Header"
 
 documentclass: "elsarticle"
@@ -26,12 +26,12 @@ Thesis_FP: FALSE
 # Comment: ----- Follow this pattern for up to 5 authors
 AddTitle: TRUE # Use FALSE when submitting to peer reviewed platform. This will remove author names.
 Author1: "Hendri van Zyl"  # First Author - note the thanks message displayed as an italic footnote of first page.
-Ref1: "Final Project for Financial Econometrics 871 at Stellenosch University, South Africa" # First Author's Affiliation
+Ref1: "Stellenosch University, South Africa" # First Author's Affiliation
 Email1: "17640296\\@sun.ac.za" # First Author's Email address
 
-# Author2: "John Smith"
-# Ref2: "Some other Institution, Cape Town, South Africa"
-# Email2: "John\\@gmail.com"
+Author2: "Nico Katzke"
+Ref2: "Satrix, Cape Town, South Africa"
+Email2: "nfkatzke.class\\@gmail.com"
 # CommonAffiliation_12: TRUE # If Author 1 and 2 have a common affiliation. Works with _13, _23, etc.
 # 
 # Author3: "John Doe"
@@ -100,315 +100,114 @@ abstract: |
 <!-- If you want a chunk's code to be printed, set echo = TRUE. message = FALSE stops R printing ugly package loading details in your final paper too. I also suggest setting warning = FALSE and checking for warnings in R, else you might find ugly warnings in your paper. -->
 
 ```{r setup, include=FALSE}
+library(knitr)
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.pos="H", fig.pos = 'H')
-# Note: Include = FALSE implies the code is executed, but not printed in your pdf.
-# warning and message = FALSE implies ugly messages and warnings are removed from your pdf.
-# These should be picked up when you execute the command chunks (code sections below) in your rmd, not printed in your paper!
-
-# Lets load in example data, and see how this can be stored and later called from your 'data' folder.
-if(!require("tidyverse")) install.packages("tidyverse")
-library(tidyverse)
-Example_data <- Texevier::Ex_Dat
-
-# Notice that as you are working in a .Rproj file (I am assuming you are) - the relative paths of your directories start at your specified root.
-# This means that when working in a .Rproj file, you never need to use getwd() - it is assumed as your base root automatically.
-write_rds(Example_data, path = "data/Example_data.rds")
 
 ```
 
 
-<!-- ############################## -->
-<!-- # Start Writing here: -->
-<!-- ############################## -->
 
 # Introduction \label{Introduction}
 
+This study examines whether smaller stocks exhibit greater stability than larger ones by analysing volatility differences across small, mid, and large-cap stocks listed on the Johannesburg Stock Exchange (JSE). Financial theory suggests that small-cap stocks are typically more volatile due to higher risk exposure, lower liquidity, and greater sensitivity to economic conditions. @jena2021volatility point out that despite the unconditional correlation between these indices, they exhibit very different risk, return and liquidity profiles. Moreover, their findings indicate that in India, large cap stocks offer investors an opportunity for diversification and hedging in the short and long run, respectively. By splitting the JSE All Share Index (J203) into three market cap segments and weighting them by market capitalization, this analysis provides a clearer understanding of how volatility varies across stock sizes.
 
-A core tenet of modern portfolio theory relates to diversification, one dimension of which relates to 
-
-References are to be made as follows: @fama1997[p. 33] and @grinold2000 Such authors could also be referenced in brackets [@grinold2000] and together [@fama1997 \& @grinold2000]. Source the reference code from scholar.google.com by clicking on ``cite'' below article name. Then select BibTeX at the bottom of the Cite window, and proceed to copy and paste this code into your ref.bib file, located in the directory's Tex folder. Open this file in Rstudio for ease of management, else open it in your preferred Tex environment. Add and manage your article details here for simplicity - once saved, it will self-adjust in your paper.
-
-> I suggest renaming the top line after \@article, as done in the template ref.bib file, to something more intuitive for you to remember. Do not change the rest of the code. Also, be mindful of the fact that bib references from google scholar may at times be incorrect. Reference Latex forums for correct bibtex notation.
-
-To reference a section, you have to set a label using ``\\label'' in R, and then reference it in-text as e.g. referencing a later section, Section \ref{Meth}.
-
-Writing in Rmarkdown is surprizingly easy - see [this website](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf) cheatsheet for a summary on writing Rmd writing tips.
-
-# Data  {-}
-
-Notice how I used the curly brackets and dash to remove the numbering of the data section.
-
-Discussion of data should be thorough with a table of statistics and ideally a figure.
-
-In your tempalte folder, you will find a Data and a Code folder. In order to keep your data files neat, store all of them in your Data folder. Also, I strongly suggest keeping this Rmd file for writing and executing commands, not writing out long pieces of data-wrangling. In the example below, I simply create a ggplot template for scatter plot consistency. I suggest keeping all your data in a data folder.
-
-<!-- The following is a code chunk. It must have its own unique name (after the r), or no name. After the comma follows commands for R which are self-explanatory. By default, the code and messages will not be printed in your pdf, just the output: -->
-
-```{r Figure1,  warning =  FALSE, fig.align = 'center', fig.cap = "Caption Here \\label{Figure1}", fig.ext = 'png', fig.height = 3, fig.width = 6}
-
-  # This is just a random plot to show you a plot. This is done if the getwd() does not point to your Template's directory.
-  # Set WD below to your project's working directory.
-
-  g <-
-  ggplot(data = mtcars) +
-  geom_point(aes(x = disp, y = hp, color = cyl)) +
-  theme_bw() +
-  # theme(legend.position = "none") +
-  theme(plot.title = element_text(size = 10)) +
-  theme(axis.title = element_text(size = 10),
-        axis.title.x = element_text()) +
-  labs(y = "y-axis", x = "x-axis", title = "Some amazing plot")
-
-g
-
-```
-
-To make your graphs look extra nice in latex world, you could use Tikz device. Replace dev - 'png' with 'tikz' in the chunk below. Notice this makes the build time longer and produces extra tex files - so if you are comfortable with this, set your device to Tikz and try it out:
-
-```{r Figure2, warning =  FALSE, fig.align = 'center', fig.cap = "Caption Here \\label{Figure2}", fig.height = 3, fig.width = 6, dev = 'png'}
-
-ExampleData <- read_rds( "data/Example_data.rds")
-
-source("code/Example_Plot_Scatter.R") # Load a function from your 'code' folder. This e.g. plots scatters to your own preferences.
-source( "code/Data_Create.R") #
-
-ExampleData <- Data_Create(N = 100) # Same as the ExampleData loaded above - this is just a function to create the stored data.
-
-g <- Example_Plot_Scatter(DataInput = ExampleData,
-                          X = "Height_Score",
-                          Y = "Weight_Score",
-                          Z = "Agility_Score",
-                          Theme = theme_bw(), # run ?ggthemes for other themes.
-                          Title = "", # I prefer to use the caption set above.
-                          Ylab = "Height",
-                          Xlab = "Lenght",
-                          LegendTitle = "Agility",
-                          TitleSize = 10,
-                          LabSize = 10)
-
-g
-
-# Although the functions above are really simple, the principle is simple: containing calculations and data wrangling in their own functions will make this template much cleaner and more manageable.
-# When you start working, delete these meaningless functions and replace with your own...
-
-```
-
-To reference the plot above, add a ``\\label'' after the caption in the chunk heading, as done above. Then reference the plot as such: As can be seen, Figures \ref{Figure1}  and \ref{Figure2} are excellent, with Figure \ref{Figure2} being particularly aesthetically pleasing due to its device setting of Tikz. The nice thing now is that it correctly numbers all your figures (and sections or tables) and will update if it moves. The links are also dynamic.
-
-I very strongly suggest using ggplot2 (ideally in combination with dplyr) using the ggtheme package to change the themes of your figures.
-
-Also note the information that I have placed above the chunks in the code chunks for the figures. You can edit any of these easily - visit the Rmarkdown webpage for more information.
-
-# Splitting a page
-
-You can also very easily split a page using built-in Pandoc formatting. I comment this out in the code (as this has caused issues building the pdf for some users - which I presume to be a Pandoc issue), but you are welcome to try it out yourself by commenting out the following section in your Rmd file.
+To measure stability and risk, the study examines rolling 3-year standard deviations, Sharpe ratios, maximum drawdowns, and correlations with the J203 index to assess systematic risk exposure. These metrics provide insight into the risk-return trade-off for each segment and allow for a simple comparison of volatility dynamics. Though limited in scope this research can illuminate the differences in stability across market capitalisation and whether this dimension presents an opportunity for portfolio diversification.
 
 
-<!-- :::::: {.columns data-latex="[T]"} -->
-<!-- ::: {.column data-latex="{0.7\textwidth}"} -->
-<!-- ```{r, echo=FALSE, fig.width=4, fig.height=4} -->
-<!-- par(mar = c(4, 4, .2, .1)) -->
-<!-- plot(cars, pch = 19) -->
-<!-- ``` -->
-<!-- ::: -->
-<!-- ::: {.column data-latex="{0.05\textwidth}"} -->
-<!-- \ -->
-<!-- ::: -->
-<!-- ::: {.column data-latex="{0.2\textwidth}"} -->
-<!-- \scriptsize -->
+# Data \label{Data}
 
-<!-- ## Data {-} -->
-<!-- The figure on the left-hand side shows the `cars` data. -->
-
-<!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do -->
-<!-- eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut -->
-<!-- enim ad minim veniam, quis nostrud exercitation ullamco laboris -->
-<!-- nisi ut aliquip ex ea commodo consequat. -->
-<!-- ::: -->
-<!-- :::::: -->
+This analysis utilizes data from the JSE All Share Index (J203), covering daily returns and proportional weights of 99% of JSE-listed stocks from January 1, 2014, to November 29, 2024. Instead of analysing individual stocks, the dataset was aggregated and reweighted based on market capitalization classifications at each point in time. This means that stocks were dynamically grouped into small, mid, and large-cap categories as their market cap evolved over the period. Consequently, the units of observation in this study are the market cap-weighted indices for small, mid, and large-cap stocks, allowing for a structured comparison of their volatility, performance, and risk dynamics over time. Additionally, for comparative purposes, the 2-year South African bond yield is included as a benchmark. However, it is important to note that the last available bond yield data is from March 2022, meaning that all direct comparisons are limited to this period. A summary of the returns data is provided in Table 2.1 below. Notably, small caps exhibit the lowest standard deviation, suggesting relatively lower volatility compared to mid and large caps. Interestingly, the bond yield displays extreme kurtosis and negative skewness, indicating the presence of rare but severe fluctuations, which contrast with the more moderate distribution of equity returns. The results of the comparisons are provided in the next section.
 
 
-
-#  Methodology \label{Meth}
-
-## Subsection
-Ideally do not overuse subsections. It equates to bad writing.^[This is an example of a footnote by the way. Something that should also not be overused.]
-
-## Math section
-
-Equations should be written as such:
-
-\begin{align}
-\beta = \sum_{i = 1}^{\infty}\frac{\alpha^2}{\sigma_{t-1}^2} \label{eq1} \\
-\int_{x = 1}^{\infty}x_{i} = 1 \notag
-\end{align}
-
-If you would like to see the equations as you type in Rmarkdown, use $ symbols instead (see this for yourself by adjusted the equation):
-
-$$
-\beta = \sum_{i = 1}^{\infty}\frac{\alpha^2}{\sigma_{t-1}^2} \\
-\int_{x = 1}^{\infty}x_{i} = 1
-$$
-
-Note the equation above - this should appear in math in Rstudio. Writing nice math requires practice. Note I used a forward slashes to make a space in the equations. I can also align equations using  __\&__, and set to numbering only the first line. Now I will have to type ``begin equation'' which is a native \LaTeX command. Here follows a more complicated equation that you want aligned (using \& sign) and numbered:
-
-
-\begin{align}
-	y_t &= c + B(L) y_{t-1} + e_t   \label{eq2}    \\ \notag
-	e_t &= H_t^{1/2}  z_t ; \quad z_t \sim  N(0,I_N) \quad \& \quad H_t = D_tR_tD_t \\ \notag
-		D_t^2 &= {\sigma_{1,t}, \dots, \sigma_{N,t}}   \\ \notag
-		\sigma_{i,t}^2 &= \gamma_i+\kappa_{i,t}  v_{i, t-1}^2 +\eta_i  \sigma_{i, t-1}^2, \quad \forall i \\ \notag
-		R_{t, i, j} &= {diag(Q_{t, i, j}}^{-1}) . Q_{t, i, j} . diag(Q_{t, i, j}^{-1})  \\ \notag
-		Q_{t, i, j} &= (1-\alpha-\beta)  \bar{Q} + \alpha  z_t  z_t'  + \beta  Q_{t, i, j} \notag
-\end{align}
-
-Note that in \ref{eq2} I have aligned the equations by the equal signs. I also want only one tag, and I create spaces using ``quads''.
-
-See if you can figure out how to do complex math using the two examples provided in \ref{eq1} and \ref{eq2}.
-
-<!-- $$ -->
-<!-- This is a commented out section in the writing part. -->
-<!-- Comments are created by highlighting text, amnd pressing CTL+C -->
-<!-- \\begin{align} -->
-<!-- \\beta = \\alpha^2 -->
-<!-- \end{align} -->
-<!-- $$ -->
+\begin{table}[H]
+    \centering
+    \caption{Descriptive Statistics for Market Cap Indices and Bond Yields}
+    \label{tab:tablestats}
+    \begin{tabular}{lcccc}
+        \hline
+        Statistic & Small Caps & Mid Caps & Large Caps & Bond 2Y \\
+        \hline
+        Observations & 2061.000 & 2061.000 & 2061.000 & 2061.000 \\
+        NAs & 0.000 & 0.000 & 0.000 & 0.000 \\
+        Minimum & -0.092 & -0.087 & -0.100 & -0.261 \\
+        Quartile 1 & -0.004 & -0.005 & -0.006 & -0.003 \\
+        Median & 0.001 & 0.001 & 0.001 & 0.000 \\
+        Arithmetic Mean & 0.000 & 0.000 & 0.000 & 0.000 \\
+        Geometric Mean & 0.000 & 0.000 & 0.000 & 0.000 \\
+        Quartile 3 & 0.005 & 0.006 & 0.007 & 0.003 \\
+        Maximum & 0.075 & 0.062 & 0.086 & 0.157 \\
+        SE Mean & 0.000 & 0.000 & 0.000 & 0.000 \\
+        LCL Mean (0.95) & 0.000 & 0.000 & 0.000 & 0.000 \\
+        UCL Mean (0.95) & 0.001 & 0.001 & 0.001 & 0.000 \\
+        Variance & 0.000 & 0.000 & 0.000 & 0.000 \\
+        Stdev & 0.009 & 0.011 & 0.012 & 0.011 \\
+        Skewness & -0.967 & -0.814 & -0.409 & -3.885 \\
+        Kurtosis & 19.821 & 9.526 & 7.042 & 207.480 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 
-# Including an external plot
-
-You can also include plots produced outside of your Rmarkdown file using the package *knitr*
-
-See below chunk:
-
-```{r, out.width = "205px", fig.cap=figures("Some Figure"), eval = F}
-
-knitr::include_graphics("YourFigureLocation/Logo.png")
-
-```
 
 
 # Results
 
-Tables can be included as follows. Use the _xtable_ (or kable) package for tables. Table placement = H implies Latex tries to place the table Here, and not on a new page (there are, however, very many ways to skin this cat. Luckily there are many forums online!).
+Figure 3.1 presents the cumulative returns of the market cap-weighted indices over the sample period. From 2014 to 2020, the performance of small, mid, and large-cap indices remained relatively similar, with no significant divergence among them. However, following the COVID-19 pandemic and the subsequent market recovery, small-cap stocks demonstrated a clear outperformance compared to mid and large caps. This suggests that, while all segments were impacted by the initial market shock, small caps experienced a stronger post-pandemic rebound, potentially driven by sector-specific recoveries. This divergence highlights the differing market dynamics across capitalization sizes in response to economic shocks and recoveries.
+
+```{r Figure1, warning =  FALSE, fig.align = 'center', fig.cap = "Cumulative Returns by Market Cap Size \\label{Figure1}"}
+knitr::include_graphics("plots/cum_plot.pdf")
+```
+
+Figure 3.2 illustrates the annualized 3-year rolling returns for the market cap indices. The results reinforce the earlier observation that small-cap stocks often delivered superior returns throughout the majority of the sample period. Unlike cumulative returns, where small caps only began to notably outperform after the COVID-19 recovery, the rolling return data suggests that small caps maintained a persistent performance advantage over mid and large caps for nearly the entire sample range.
+
+This trend highlights the long-term return premium potentially associated with smaller stocks, this could reflect higher growth potential, greater market inefficiencies, or increased risk-taking by investors in certain periods. By the final years of the sample, however,  the rolling returns of large caps began to converge with those of small caps, suggesting a possible stabilization in market dynamics or a shift in investor preference towards larger, more established companies.
+
+```{r Figure2, warning =  FALSE, fig.align = 'center', fig.cap = "Annualized 3-year Rolling Returns By Market Cap Size \\label{Figure2}"}
+knitr::include_graphics("plots/ret_plot.pdf")
+```
+
+Figure 3.3 presents the annualized 3-year rolling standard deviation for the market cap indices, highlighting a counterintuitive finding: small caps exhibit a consistently lower standard deviation compared to both mid and large caps throughout the sample period. This result challenges conventional financial theory, which typically associates small caps with higher volatility due to their lower liquidity, greater sensitivity to market shocks, and heightened exposure to idiosyncratic risks.
+
+Interestingly, mid and large caps display relatively similar volatility levels for much of the sample, with only small deviations until 2023. After this point, mid caps experience a noticeable decline in standard deviation, bringing their volatility closer to that of small caps, while large caps maintain relatively stable volatility. The relative stability of small caps raises questions about the underlying drivers of their performance and volatility. This finding emphasizes the need for further investigation into the volatility drivers and risk-return tradeoffs within small-cap stocks, as they appear to defy traditional expectations over this sample period.
 
 
-```{r ShortTable, results = 'asis'}
+```{r Figure3, warning =  FALSE, fig.align = 'center', fig.cap = "Annualized 3-year Rolling SD By Market Cap Size \\label{Figure3}"}
+knitr::include_graphics("plots/sd_plot.pdf")
+```
 
-library(xtable)
-data <- mtcars[1:5,] %>% tibble::as_tibble()
 
-table <- xtable(data, caption = "Short Table Example \\label{tab1}")
-  print.xtable(table,
-             # tabular.environment = "longtable",
-             floating = TRUE,
-             table.placement = 'H',
-             # scalebox = 0.3,
-             comment = FALSE,
-             caption.placement = 'bottom'
-             )
+The table summarises downside risk estimates for small and mid-cap stocks, focusing on metrics that quantify potential losses and tail risks. While results for large caps appear to be incorrect here, the comparison between small and mid caps can still provide meaningful insights. Mid caps consistently exhibit higher risk than small caps, with higher semi-deviation (0.76% vs. 0.65%) and downside deviation (0.74% vs. 0.63%), indicating greater variability and downside exposure during periods of negative returns. Furthermore, mid caps show only a slightly smaller maximum drawdown (39.07%) than small caps (40.26%), suggesting comparable responses during extreme market downturns.
+
+When assessing tail risks using Value at Risk (VaR) and Expected Shortfall (ES), mid caps exhibit the highest downside exposure, with a Historical VaR (95%) of -1.53% and ES of -2.33%, compared to small caps (-1.21% and -1.97%). This pattern persists when adjusting for non-normal return distributions: mid caps have a Modified VaR (95%) of -1.68% and Modified ES (95%) of -3.54%, compared to -1.29% and -2.32% for small caps. These results suggest that mid caps are more vulnerable to extreme downside events, possibly reflecting a greater sensitivity to market shocks or less consistent investor demand relative to small caps.
+
+Overall, small caps exhibit lower overall risk than mid caps across most downside risk measures, with lower deviations, VaR, and ES. However, both categories show significant exposure to extreme tail events, underscoring the inherent risks associated with smaller-cap segments of the market. 
+
+```{r Table1, echo=FALSE, fig.align='center', out.width="80%", fig.cap="Table 1: Risk Measures \\label{tab:Table1}"}
+knitr::include_graphics("tables/downside.png")
 
 ```
 
-To reference calculations __in text__, _do this:_ From table \ref{tab1} we see the average value of mpg is `r mean(mtcars[1:5,]$mpg)`.
 
-Including tables that span across pages, use the following (note that I add below the table: ``continue on the next page''). This is a neat way of splitting your table across a page.
+Table 2 below provides a 5-year comparative analysis of the performance and risk metrics for small, mid, and large-cap stocks, along with the 2-year South African bond yield (Bond_2Y), although its results appear to be wrong to will be ignored. Over the past five years, small caps have delivered the highest cumulative returns (79.4%), outperforming both large caps (76.8%) and mid caps (39.5%). Small caps also generated the highest excess returns above the benchmark (20.5%), slightly edging out large caps (20.2%). Mid caps lagged significantly, with cumulative returns of 39.5% and excess returns of 14.5%. These results highlight the superior long-term performance of small caps compared to other market segments. The statistics for the 2-year bond yield, however, appear to be incorrect and have been excluded from the analysis.
 
-Use the following default settings to build your own possibly long tables. Note that the following will fit on one page if it can, but cleanly spreads over multiple pages:
+In terms of risk, large caps exhibited the highest annualized standard deviation (4.4%), followed closely by mid caps (4.1%), while small caps (3.6%) were the least volatile. Despite their higher volatility, large caps delivered the best risk-adjusted performance, as indicated by their superior Adjusted Sharpe Ratio (0.493) compared to mid caps (0.327) and small caps (0.302). Downside risk metrics reveal that mid caps were the most vulnerable, with the largest average drawdown (4.2%) and the highest Modified CVaR (-0.047). Small caps, while maintaining lower volatility, also showed better downside protection, with a lower average drawdown (2.6%) and Modified CVaR (-0.041) compared to mid caps. Large caps demonstrated strong performance on downside metrics also with a moderate drawdown (3.8%) and Modified CVaR (-0.042).
 
-```{r LongTable, results = 'asis'}
+Market sensitivity further distinguishes these indices. Small caps had the highest Information Ratio (0.762), reflecting their superior risk-adjusted excess returns relative to the benchmark, while mid caps trailed with an Information Ratio of 0.498. In bear markets, large caps (-0.060) exhibited greater stability, with a lower downside beta than small caps (-0.070) and mid caps (-0.041). This highlights the ability of large caps to better weather market downturns. Overall, this analysis underscores the strong risk-return trade-off of small caps, the greater vulnerability of mid caps, and the consistent risk-adjusted performance of large caps, offering valuable insights for portfolio diversification and risk management.
 
-library(xtable)
+```{r Table2, echo=FALSE, fig.align='center', out.width="80%", fig.cap="Table 2: Descriptive Statistics \\label{tab:Table2}"}
 
-data = mtcars %>% tibble::as_tibble()
-  addtorow          <- list()
-  addtorow$pos      <- list()
-  addtorow$pos[[1]] <- c(0)
-  addtorow$command  <- c(paste("\\hline \n",
-                               "\\endhead \n",
-                               "\\hline \n",
-                               "{\\footnotesize Continued on next page} \n",
-                               "\\endfoot \n",
-                               "\\endlastfoot \n",sep=""))
-table <- xtable(data, caption = "Long Table Example")
-  print.xtable(table,
-             tabular.environment = "longtable",
-             floating = FALSE, # Leave this as is.
-             table.placement = 'H', # Leave this as is.
-             booktabs = T, # Aesthetics
-             include.rownames = FALSE,  # Typically you don't want this in a table.
-             add.to.row = addtorow, # For adding the Continued on next page part...
-             comment = FALSE,
-             caption.placement = 'top',  # Where do you want the caption?
-             size="\\fontsize{12pt}{13pt}\\selectfont"  # Size of text in table..
-             )
-# See https://cran.r-project.org/web/packages/xtable/vignettes/xtableGallery.pdf for table inspiration
+knitr::include_graphics("tables/comp.png")
 ```
 
-\hfill
-
-<!-- hfill can be used to create a space, like here between text and table. -->
 
 
-## Huxtable
-
-Huxtable is a very nice package for making working with tables between Rmarkdown and Tex easier.
-
-This cost some adjustment to the Tex templates to make it work, but it now works nicely.
-
-See documentation for this package [here](https://hughjonesd.github.io/huxtable/huxtable.html). A particularly nice addition of this package is for making the printing of regression results a joy (see [here](https://hughjonesd.github.io/huxtable/huxtable.html#creating-a-regression-table)). Here follows an example:
-
-
-If you are eager to use huxtable, comment out the Huxtable table in the Rmd template, and uncomment the colortbl package in your Rmd's root.
-
-Note that I do not include this in the ordinary template, as some latex users have complained it breaks when they build their Rmds (especially those using tidytex - I don't have this problem as I have the full Miktex installed on mine). Up to you, but I strongly recommend installing the package manually and using huxtable. To make this work, uncomment the _Adding additional latex packages_ part in yaml at the top of the Rmd file. Then comment out the huxtable example in the template below this line. Reknit, and enjoy.
-
-```{r, results = 'asis'}
-
-if(!require(huxtable)) install.packages(huxtable)
-library(huxtable)
-data(diamonds, package = 'ggplot2')
-Title <- "Regression Output"
-Label <- "Reg01"
-lm1 <- lm(price ~ carat, diamonds)
-lm2 <- lm(price ~ depth, diamonds)
-lm3 <- lm(price ~ carat + depth, diamonds)
-htab <-
-huxreg(lm1, lm2, lm3,
-                statistics = c(N = "nobs", R2 = "r.squared"),
-                note = "%stars%.") %>%
-  set_caption(Title) %>%
-  set_label(Label)
-# More settings:
-font_size(htab) <- 12
-# Let's change regression names: this is slightly hacky, but works. Comment out this section to see what the default looks like:
-  Names <- c( "Reg1", "Reg2", "Reg3")
-  for(i in 1:length(Names)) {
-    htab[1,][[1+i]] <- Names[i]
-  }
-# Now simply call the table:
-htab
-
-```
-
-FYI - R also recently introduced the gt package, which is worthwhile exploring too.
-
-# Lists
-
-To add lists, simply using the following notation
-
-* This is really simple
-
-    + Just note the spaces here - writing in R you have to sometimes be pedantic about spaces...
-
-* Note that Rmarkdown notation removes the pain of defining \LaTeX environments!
 
 # Conclusion
 
-I hope you find this template useful. Remember, stackoverflow is your friend - use it to find answers to questions. Feel free to write me a mail if you have any questions regarding the use of this package. To cite this package, simply type citation("Texevier") in Rstudio to get the citation for @Texevier (Note that uncited references in your bibtex file will not be included in References).
+This analysis highlights the distinct performance and risk dynamics of small, mid, and large-cap stocks on the Johannesburg Stock Exchange over the past 5 years. Small caps emerged as the strongest performer, delivering superior long-term returns and maintaining relatively moderate volatility. Their consistent outperformance highlights their potential for yielding higher growth, even while exhibiting less downside risks. In contrast, mid caps proved to be the most vulnerable segment, struggling with lower returns and higher exposure to market shocks, as reflected in their risk metrics. 
 
-<!-- Make title of bibliography here: -->
-<!-- \newpage -->
+Large caps demonstrated a balance between return and risk, offering competitive performance while maintaining greater stability during adverse market conditions. They provided strong risk-adjusted returns, emphasizing their appeal to more risk-averse investors. Overall, the findings suggest that small caps are well-suited for those seeking higher growth with manageable risk, while large caps provide a stable and reliable option. These findings challenge the mainstream notion that small caps are inherently more volatile and riskier than their larger counterparts. A deeper investigation is required to better understand the underlying factors driving this unique behaviour in the South African market, such as structural differences, sectoral composition, or local economic dynamics. 
+
 
 \newpage
 
@@ -417,11 +216,4 @@ I hope you find this template useful. Remember, stackoverflow is your friend - u
 <div id="refs"></div>
 
 
-# Appendix {-}
-
-## Appendix A {-}
-
-Some appendix information here
-
-## Appendix B {-}
 
