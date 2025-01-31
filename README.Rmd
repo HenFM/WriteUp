@@ -247,7 +247,7 @@ sd_plot
 
 
 Let's first try the Downside risk package
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 wide_xts <- ALSI_returns %>% 
     pivot_wider(., names_from = Market_cap, values_from = Return) %>% tbl2xts::tbl_xts()
@@ -301,7 +301,7 @@ Funds <- ALSI_returns %>%
 
 Here I just feed my data into the Moments_Comp function which calculates a battery of financial statistics. 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 source("code/momentscomp.R")
 
@@ -376,7 +376,7 @@ gt_comp
 # gt::gtsave(gt_comp, here("tables/moments.png"))
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(PerformanceAnalytics)
 tablestats <-
   Funds %>% pivot_wider(names_from = "Tickers", values_from = "Ret") %>%  tbl_xts() %>% 
